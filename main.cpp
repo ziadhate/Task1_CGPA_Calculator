@@ -1,14 +1,22 @@
 /*
 ===========================================================
-            CGPA Calculator System
+                Advanced CGPA Calculator System
 -----------------------------------------------------------
 Author : Ziad Hatem
 Language : C++
+
 Description:
-This program calculates the GPA/CGPA of a student
-based on course grades and credit hours.
+This program calculates GPA and CGPA for multiple semesters.
+It uses Object Oriented Programming (Classes).
+
+Features:
+- Multiple semesters support
+- Real CGPA calculation
+- Grade validation
+- Menu based system
 ===========================================================
 */
+
 
 #include <iostream>
 #include <iomanip>
@@ -17,147 +25,556 @@ based on course grades and credit hours.
 
 using namespace std;
 
-/*---------------------------------------------
-   Structure to store information of one course
-----------------------------------------------*/
-struct Course
+
+/*
+===========================================================
+                    Course Class
+===========================================================
+*/
+class Course
 {
-    string name;
+private:
+
+    string courseName;
     string letterGrade;
     int creditHours;
     double gradePoint;
-};
 
-/*---------------------------------------------
-      Convert Letter Grade to Grade Point
-----------------------------------------------*/
-double getGradePoint(string grade)
-{
-    if (grade == "A+" || grade == "A")
-        return 4.0;
-    else if (grade == "A-")
-        return 3.7;
-    else if (grade == "B+")
-        return 3.3;
-    else if (grade == "B")
-        return 3.0;
-    else if (grade == "B-")
-        return 2.7;
-    else if (grade == "C+")
-        return 2.3;
-    else if (grade == "C")
-        return 2.0;
-    else if (grade == "C-")
-        return 1.7;
-    else if (grade == "D+")
-        return 1.3;
-    else if (grade == "D")
-        return 1.0;
-    else
-        return 0.0; // F
-}
 
-/*---------------------------------------------
-      Display All Entered Courses
-----------------------------------------------*/
-void displayCourses(const vector<Course>& courses)
-{
-    cout << "\n================ Course Details ================\n";
-
-    cout << left
-         << setw(20) << "Course"
-         << setw(10) << "Grade"
-         << setw(15) << "Credits"
-         << setw(15) << "Points"
-         << endl;
-
-    cout << "------------------------------------------------------------\n";
-
-    for (const Course& course : courses)
+    // Convert Letter Grade into Grade Point
+    double calculateGradePoint(string grade)
     {
-        cout << left
-             << setw(20) << course.name
-             << setw(10) << course.letterGrade
-             << setw(15) << course.creditHours
-             << setw(15) << course.gradePoint
-             << endl;
+        if (grade == "A+" || grade == "A")
+            return 4.0;
+
+        else if (grade == "A-")
+            return 3.7;
+
+        else if (grade == "B+")
+            return 3.3;
+
+        else if (grade == "B")
+            return 3.0;
+
+        else if (grade == "B-")
+            return 2.7;
+
+        else if (grade == "C+")
+            return 2.3;
+
+        else if (grade == "C")
+            return 2.0;
+
+        else if (grade == "C-")
+            return 1.7;
+
+        else if (grade == "D+")
+            return 1.3;
+
+        else if (grade == "D")
+            return 1.0;
+
+        else
+            return -1;
     }
 
-    cout << "------------------------------------------------------------\n";
-}
 
-/*---------------------------------------------
-                Main Program
-----------------------------------------------*/
-int main()
-{
-    vector<Course> courses;
-
-    int numberOfCourses;
-
-    cout << "=========================================\n";
-    cout << "         CGPA Calculator System\n";
-    cout << "=========================================\n\n";
-
-    // Validate number of courses
-    do
+    // Check if grade is valid
+    bool isValidGrade(string grade)
     {
-        cout << "Enter Number of Courses: ";
-        cin >> numberOfCourses;
+        vector<string> validGrades =
+        {
+            "A+","A","A-",
+            "B+","B","B-",
+            "C+","C","C-",
+            "D+","D","F"
+        };
 
-        if (numberOfCourses <= 0)
-            cout << "Invalid Number!\n\n";
 
-    } while (numberOfCourses <= 0);
+        for(string g : validGrades)
+        {
+            if(g == grade)
+                return true;
+        }
 
-    double totalGradePoints = 0.0;
-    int totalCredits = 0;
+        return false;
+    }
 
-    // Input all courses
-    for (int i = 0; i < numberOfCourses; i++)
+
+public:
+
+
+    /*
+        Constructor
+    */
+    Course()
     {
-        Course course;
+        gradePoint = 0;
+        creditHours = 0;
+    }
 
-        cout << "\nCourse " << i + 1 << endl;
 
-        cout << "Course Name: ";
-        cin >> course.name;
 
-        cout << "Letter Grade (A+,A,A-,B+,B,B-,C+,C,C-,D+,D,F): ";
-        cin >> course.letterGrade;
+    /*
+        Input Course Data
+    */
+    void inputCourse()
+    {
 
-        course.gradePoint = getGradePoint(course.letterGrade);
+        cout << "\nCourse Name : ";
+        cin >> courseName;
 
+
+        // Validate Letter Grade
         do
         {
-            cout << "Credit Hours: ";
-            cin >> course.creditHours;
+            cout << "Letter Grade : ";
+            cin >> letterGrade;
 
-            if (course.creditHours <= 0)
-                cout << "Invalid Credit Hours!\n";
 
-        } while (course.creditHours <= 0);
+            if(!isValidGrade(letterGrade))
+            {
+                cout << "Invalid Grade! Try Again.\n";
+            }
 
-        totalCredits += course.creditHours;
-        totalGradePoints += course.gradePoint * course.creditHours;
 
-        courses.push_back(course);
+        }while(!isValidGrade(letterGrade));
+
+
+
+        gradePoint = calculateGradePoint(letterGrade);
+
+
+
+        // Validate Credit Hours
+        do
+        {
+
+            cout << "Credit Hours : ";
+            cin >> creditHours;
+
+
+            if(creditHours <=0)
+                cout<<"Invalid Credit Hours!\n";
+
+
+        }while(creditHours<=0);
+
     }
 
-    // Calculate GPA
-    double gpa = totalGradePoints / totalCredits;
 
-    // Display
-    displayCourses(courses);
 
-    cout << fixed << setprecision(2);
 
-    cout << "\nTotal Credit Hours : " << totalCredits << endl;
-    cout << "Total Grade Points : " << totalGradePoints << endl;
-    cout << "Semester GPA       : " << gpa << endl;
-    cout << "Overall CGPA       : " << gpa << endl;
+    double getTotalPoints()
+    {
+        return gradePoint * creditHours;
+    }
 
-    cout << "\nThank You!\n";
+
+
+    int getCredits()
+    {
+        return creditHours;
+    }
+
+
+
+    void display()
+    {
+
+        cout << left
+        << setw(20)<<courseName
+        << setw(10)<<letterGrade
+        << setw(10)<<creditHours
+        << setw(10)<<gradePoint
+        <<endl;
+
+    }
+
+};
+
+
+
+
+
+/*
+===========================================================
+                    Semester Class
+===========================================================
+*/
+
+class Semester
+{
+
+private:
+
+    vector<Course> courses;
+
+    int semesterNumber;
+
+
+public:
+
+
+    Semester(int num)
+    {
+        semesterNumber=num;
+    }
+
+
+
+    void addCourses()
+    {
+
+        int number;
+
+
+        cout<<"\nEnter Number of Courses : ";
+        cin>>number;
+
+
+        for(int i=0;i<number;i++)
+        {
+
+            cout<<"\nCourse "<<i+1<<endl;
+
+
+            Course c;
+
+            c.inputCourse();
+
+
+            courses.push_back(c);
+
+        }
+
+    }
+
+
+
+
+
+    double calculateGPA()
+    {
+
+        double totalPoints=0;
+
+        int totalCredits=0;
+
+
+
+        for(Course c:courses)
+        {
+
+            totalPoints += c.getTotalPoints();
+
+            totalCredits += c.getCredits();
+
+        }
+
+
+        return totalPoints / totalCredits;
+
+    }
+
+
+
+
+
+    double getTotalPoints()
+    {
+
+        double total=0;
+
+
+        for(Course c:courses)
+        {
+            total += c.getTotalPoints();
+        }
+
+
+        return total;
+
+    }
+
+
+
+
+
+    int getTotalCredits()
+    {
+
+        int total=0;
+
+
+        for(Course c:courses)
+        {
+            total+=c.getCredits();
+        }
+
+
+        return total;
+
+    }
+
+
+
+
+
+    void displaySemester()
+    {
+
+        cout<<"\n====================================\n";
+
+        cout<<"Semester "<<semesterNumber<<endl;
+
+
+        cout<<"====================================\n";
+
+
+        cout<<left
+        <<setw(20)<<"Course"
+        <<setw(10)<<"Grade"
+        <<setw(10)<<"Credit"
+        <<setw(10)<<"Point"
+        <<endl;
+
+
+
+        for(Course c:courses)
+        {
+            c.display();
+        }
+
+
+
+        cout<<"\nSemester GPA : "
+        <<fixed<<setprecision(2)
+        <<calculateGPA()
+        <<endl;
+
+
+    }
+
+
+
+};
+
+
+
+
+
+/*
+===========================================================
+                    Student Class
+===========================================================
+*/
+
+class Student
+{
+
+private:
+
+    vector<Semester> semesters;
+
+
+
+public:
+
+
+    void addSemester()
+    {
+
+        int semesterNumber =
+        semesters.size()+1;
+
+
+        Semester s(semesterNumber);
+
+
+        s.addCourses();
+
+
+        semesters.push_back(s);
+
+
+    }
+
+
+
+
+    void displayAll()
+    {
+
+        if(semesters.empty())
+        {
+            cout<<"No Data Available!\n";
+            return;
+        }
+
+
+
+        for(Semester s:semesters)
+        {
+            s.displaySemester();
+        }
+
+    }
+
+
+
+
+
+    void calculateCGPA()
+    {
+
+
+        if(semesters.empty())
+        {
+            cout<<"No Semesters Found!\n";
+            return;
+        }
+
+
+
+        double totalPoints=0;
+
+        int totalCredits=0;
+
+
+
+        for(Semester s:semesters)
+        {
+
+            totalPoints += s.getTotalPoints();
+
+
+            totalCredits += s.getTotalCredits();
+
+        }
+
+
+
+        double cgpa =
+        totalPoints / totalCredits;
+
+
+
+        cout<<"\n============================\n";
+
+        cout<<"Total Credits : "
+        <<totalCredits<<endl;
+
+
+        cout<<"Total Points : "
+        <<totalPoints<<endl;
+
+
+
+        cout<<"Real CGPA : "
+        <<fixed<<setprecision(2)
+        <<cgpa<<endl;
+
+
+        cout<<"============================\n";
+
+
+    }
+
+
+
+};
+
+
+
+
+
+
+/*
+===========================================================
+                    Main Function
+===========================================================
+*/
+
+int main()
+{
+
+    Student student;
+
+
+    int choice;
+
+
+
+    do
+    {
+
+        cout<<"\n\n==============================\n";
+        cout<<"       CGPA Calculator\n";
+        cout<<"==============================\n";
+
+
+        cout<<"1. Add New Semester\n";
+
+        cout<<"2. Display All Semesters\n";
+
+        cout<<"3. Calculate CGPA\n";
+
+        cout<<"4. Exit\n";
+
+
+        cout<<"\nChoose : ";
+        cin>>choice;
+
+
+
+        switch(choice)
+        {
+
+        case 1:
+
+            student.addSemester();
+
+            break;
+
+
+
+        case 2:
+
+            student.displayAll();
+
+            break;
+
+
+
+        case 3:
+
+            student.calculateCGPA();
+
+            break;
+
+
+
+        case 4:
+
+            cout<<"Good Bye!\n";
+
+            break;
+
+
+
+        default:
+
+            cout<<"Invalid Choice!\n";
+
+        }
+
+
+
+    }while(choice!=4);
+
+
 
     return 0;
+
 }
